@@ -1,0 +1,445 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.telflow</groupId>
+    <artifactId>training</artifactId>
+    <packaging>pom</packaging>
+    <version>${revision}${changelist}</version>
+    <name>Telflow Training Solution multi-module parent</name>
+
+    <scm>
+        <connection>scm:git:git://localhost/${basedir}</connection>
+    </scm>
+
+    <properties>
+        <!-- versions supplied by the CI system -->
+        <revision>1.0.0</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <docker.release>manual</docker.release>
+        <docker.build.number>0</docker.build.number>
+
+        <!-- telflow versions -->
+        <telflow.version>11.2</telflow.version>
+        <telflow.cim.version>11.2.0</telflow.cim.version>
+        <telflow.cim.converter.version>11.0.0</telflow.cim.converter.version>
+        <telflow.artefact.version>11.2.0</telflow.artefact.version>
+        <telflow.fabric.version>11.2.0</telflow.fabric.version>
+        <telflow.process.version>11.2.0</telflow.process.version>
+        <telflow.pricing.version>11.2.0</telflow.pricing.version>
+        <solution.factory.version>2.1.0-SNAPSHOT</solution.factory.version>
+        <consul.client.version>1.4.2</consul.client.version>
+        <tmf.core.version>2.1.0-SNAPSHOT</tmf.core.version>
+        <secore.version>2.4.13</secore.version>
+
+        <!-- telflow docker versions -->
+        <telflow.metadata.deploy.docker.tag>11.2.0</telflow.metadata.deploy.docker.tag>
+        <telflow.reporting.docker.tag>11.2.0</telflow.reporting.docker.tag>
+        <telflow.process.docker.tag>11.2.0</telflow.process.docker.tag>
+        <telflow.reference.process.docker.tag>11.2.dev.current</telflow.reference.process.docker.tag>
+        <telflow.fabric.docker.tag>11.2.0</telflow.fabric.docker.tag>
+        <telflow.pricing.docker.tag>11.2.0</telflow.pricing.docker.tag>
+        <telflow.artefact.docker.tag>11.2.0</telflow.artefact.docker.tag>
+
+        <!-- distribution -->
+        <dist.release>http://nexus.office.dgit.biz:8081/nexus/content/repositories/dgit-maven-releases</dist.release>
+        <dist.snapshot>http://nexus.office.dgit.biz:8081/nexus/content/repositories/dgit-maven-snapshots</dist.snapshot>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- dependencies -->
+        <commons-io.version>2.4</commons-io.version>
+        <camel.version>2.21.5</camel.version>
+        <jsonlib.version>2.4_1</jsonlib.version>
+        <junit.version>4.12</junit.version>
+        <log4j12.version>1.7.25</log4j12.version>
+        <wiremock.version>2.19.0</wiremock.version>
+        <compiler.jdk.version>1.8</compiler.jdk.version>
+        <osgi.version>6.0.0</osgi.version>
+        <mockito.version>3.3.3</mockito.version>
+        <scala.version>2.12</scala.version>
+        <play.version>2.7.2</play.version>
+        <scala.maven.plugin.version>4.1.1</scala.maven.plugin.version>
+        <scala.xml.version>1.2.0</scala.xml.version>
+        <guava.version>27.1-jre </guava.version>
+        <groovy.version>1.8.9</groovy.version>
+        <jackson.version>2.9.10</jackson.version>
+
+        <!-- plugins -->
+        <bundle.symbolic.name>${project.groupId}.${project.artifactId}</bundle.symbolic.name>
+        <docker.maven.plugin.version>0.33.0</docker.maven.plugin.version>
+        <maven.build.helper.version>3.0.0</maven.build.helper.version>
+        <maven.buildnumber.version>1.4</maven.buildnumber.version>
+        <maven.bundle.version>4.2.0</maven.bundle.version>
+        <maven.checkstyle.plugin.version>3.1.0</maven.checkstyle.plugin.version>
+        <maven.compiler.version>3.8.0</maven.compiler.version>
+        <!-- https://issues.apache.org/jira/browse/MINSTALL-151 -->
+        <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
+        <maven.pmd.plugin.version>3.10.0</maven.pmd.plugin.version>
+        <maven.resources.version>3.1.0</maven.resources.version>
+        <maven.rpm.version>2.0.1</maven.rpm.version>
+        <maven.surefire.plugin.version>3.0.0-M1</maven.surefire.plugin.version>
+        <maven.groovy.plugin.version>1.6.1</maven.groovy.plugin.version>
+        <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
+        <telflow-checkstyle-rules.version>2.0.7</telflow-checkstyle-rules.version>
+        <karaf.version>4.2.6</karaf.version>
+
+        <!-- docker -->
+        <docker.version>${project.version.majorVersion}.${project.version.minorVersion}</docker.version>
+        <docker.longVersion>${project.version.majorVersion}.${project.version.minorVersion}.${project.version.incrementalVersion}</docker.longVersion>
+        <docker.registry>registry.cloud.telflow.com/dgit_private</docker.registry>
+        <docker.build.dir>${project.build.directory}/dockerInclude</docker.build.dir>
+        <assembly.name>${app.name}-${docker.longVersion}</assembly.name>
+        <docker.tagging-strategy>3</docker.tagging-strategy>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>deployDockerImage</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>io.fabric8</groupId>
+                            <artifactId>docker-maven-plugin</artifactId>
+                            <version>${docker.maven.plugin.version}</version>
+                            <executions>
+                                <execution>
+                                    <id>push docker image</id>
+                                    <phase>deploy</phase>
+                                    <goals>
+                                        <goal>push</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
+
+    <modules>
+        <module>process</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.telflow.factory</groupId>
+            <artifactId>logging</artifactId>
+            <version>${solution.factory.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.telflow.factory</groupId>
+            <artifactId>authentication</artifactId>
+            <version>${solution.factory.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${maven-install-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>${maven.buildnumber.version}</version>
+                    <executions>
+                        <execution>
+                            <id>extract-git-information</id>
+                            <goals>
+                                <goal>create</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${maven.build.helper.version}</version>
+                    <executions>
+                        <execution>
+                            <id>parse-version</id>
+                            <goals>
+                                <goal>parse-version</goal>
+                            </goals>
+                            <configuration>
+                                <propertyPrefix>project.version</propertyPrefix>
+                                <versionString>${project.version}</versionString>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>timestamp-property</id>
+                            <goals>
+                                <goal>timestamp-property</goal>
+                            </goals>
+                            <configuration>
+                                <name>build.time</name>
+                                <pattern>yyyy-MM-dd HH:mm z</pattern>
+                                <timeZone>Australia/Melbourne</timeZone>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven.resources.version}</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>copyDockerFiles</id>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${docker.build.dir}</outputDirectory>
+                                <overwrite>true</overwrite>
+                                <resources>
+                                    <resource>
+                                        <directory>${project.basedir}/src/main/docker</directory>
+                                        <filtering>true</filtering>
+                                    </resource>
+                                </resources>
+                                <escapeString>\</escapeString>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Groovy Compiler -->
+                <plugin>
+                    <groupId>org.codehaus.gmavenplus</groupId>
+                    <artifactId>gmavenplus-plugin</artifactId>
+                    <version>${maven.groovy.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>addSources</goal>
+                                <goal>addTestSources</goal>
+                                <goal>generateStubs</goal>
+                                <goal>compile</goal>
+                                <goal>generateTestStubs</goal>
+                                <goal>compileTests</goal>
+                                <goal>removeStubs</goal>
+                                <goal>removeTestStubs</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>compute telflow properties</id>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>execute</goal>
+                            </goals>
+                            <configuration>
+                                <properties>
+                                    <release>${docker.release}</release>
+                                    <major>${project.version.majorVersion}</major>
+                                    <minor>${project.version.minorVersion}</minor>
+                                    <incremental>${project.version.incrementalVersion}</incremental>
+                                    <buildNum>${docker.build.number}</buildNum>
+                                    <taggingStrategy>${docker.tagging-strategy}</taggingStrategy>
+                                </properties>
+                                <scripts>
+                                    <script><![CDATA[
+                    def preciseVersion, currentVersion
+                    def isRelease = "release".equalsIgnoreCase(release)
+                    def isThreeNumberTagging = "3".equalsIgnoreCase(taggingStrategy)
+
+                    log.debug("Using ${isThreeNumberTagging ? "3 number" : "2 number"} tagging strategy")
+
+                    if (isThreeNumberTagging) {
+                      if (isRelease) {
+                        preciseVersion = "${major}.${minor}.${incremental}"
+                        currentVersion   = "${major}.${minor}.current"
+                      } else {
+                        preciseVersion = "${major}.${minor}.${incremental}.dev-${buildNum}"
+                        currentVersion   = "${major}.${minor}.dev.current"
+                      }
+                    } else {
+                      if (isRelease) {
+                        preciseVersion = "${major}.${minor}"
+                        currentVersion   = "${major}.current"
+                      } else {
+                        preciseVersion = "${major}.${minor}.dev-${buildNum}"
+                        currentVersion   = "${major}.dev.current"
+                      }
+                    }
+
+                    def imageName = "${project.properties["docker.registry"]}/${project.properties["app.name"]}"
+
+                    def newProps = [
+                      "docker.preciseVersion": preciseVersion.toString(),
+                      "docker.currentVersion": currentVersion.toString(),
+                      "docker.tags.1":         preciseVersion.toString(),
+                      "docker.tags.2":         currentVersion.toString(),
+                      "docker.tags.3":         "latest",
+                      "docker.name":           imageName.toString(),
+                      "docker.cacheFrom":      "${imageName}:latest".toString()
+                    ]
+
+                    newProps.each { prop, value ->
+                      log.info("${prop}=${value}")
+                      project.properties[prop] = value
+                    }
+                  ]]></script>
+                                </scripts>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy-all</artifactId>
+                            <version>${groovy.version}</version>
+                            <type>pom</type>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <configuration>
+                    <source>${compiler.jdk.version}</source>
+                    <target>${compiler.jdk.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven.checkstyle.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>checkstyle</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <failOnViolation>true</failOnViolation>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.dgitsystems.tools</groupId>
+                        <artifactId>telflow-checkstyle-rules</artifactId>
+                        <version>${telflow-checkstyle-rules.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <configLocation>telflow/checkstyle.xml</configLocation>
+                    <suppressionsLocation>telflow/suppressions.xml</suppressionsLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${maven.pmd.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>maven-pmd-plugin</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>cpd-check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus</id>
+            <name>Internal Releases</name>
+            <url>${dist.release}/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>Internal Releases</name>
+            <url>${dist.snapshot}/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>nexus-releases</id>
+            <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>nexus-snapshots</id>
+            <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>inomial-nexus</id>
+            <name>Inomial Releases</name>
+            <url>https://maven.inomial.com</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>release</id>
+            <name>DGiT Release Repository</name>
+            <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+</project>

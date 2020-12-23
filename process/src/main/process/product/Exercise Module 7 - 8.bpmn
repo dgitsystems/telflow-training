@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="com.telflow.process.product">
+  <process id="exerciseModule78" name="Exercise Module 7 8" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <serviceTask id="inProgress" name="In Progress" activiti:async="true" activiti:class="com.telflow.process.listeners.businessinteraction.UpdateStatus">
+      <extensionElements>
+        <activiti:field name="updateStatus">
+          <activiti:string><![CDATA[In Progress]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="inProgress"></sequenceFlow>
+    <userTask id="completeProcessTask" name="Manual Completion">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.telflow.process.listeners.task.TaskVariablePreparation">
+          <activiti:field name="taskSpecificationId">
+            <activiti:string><![CDATA[SPC000000000019]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="complete" class="com.telflow.process.listeners.task.MapCharacteristics">
+          <activiti:field name="mapping">
+            <activiti:string><![CDATA[{"confirmOrder":"//confirmOrder"}]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow2" sourceRef="inProgress" targetRef="completeProcessTask"></sequenceFlow>
+    <serviceTask id="complete" name="Complete" activiti:class="com.telflow.process.listeners.businessinteraction.UpdateStatus">
+      <extensionElements>
+        <activiti:field name="updateStatus">
+          <activiti:string><![CDATA[Complete]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow4" sourceRef="complete" targetRef="endevent1"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway" default="flow7"></exclusiveGateway>
+    <sequenceFlow id="flow5" sourceRef="completeProcessTask" targetRef="exclusivegateway1"></sequenceFlow>
+    <serviceTask id="cancel" name="Cancel" activiti:class="com.telflow.process.listeners.businessinteraction.UpdateStatus">
+      <extensionElements>
+        <activiti:field name="updateStatus">
+          <activiti:string><![CDATA[Cancel]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow6" sourceRef="exclusivegateway1" targetRef="cancel">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${"Cancel".equals(execution.getVariable("confirmOrder"))}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow7" sourceRef="exclusivegateway1" targetRef="complete"></sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow8" sourceRef="cancel" targetRef="endevent2"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_exerciseModule78">
+    <bpmndi:BPMNPlane bpmnElement="exerciseModule78" id="BPMNPlane_exerciseModule78">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="40.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="inProgress" id="BPMNShape_inProgress">
+        <omgdc:Bounds height="71.0" width="131.0" x="130.0" y="222.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="completeProcessTask" id="BPMNShape_completeProcessTask">
+        <omgdc:Bounds height="71.0" width="131.0" x="340.0" y="222.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="complete" id="BPMNShape_complete">
+        <omgdc:Bounds height="71.0" width="131.0" x="741.0" y="222.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="950.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="580.0" y="238.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cancel" id="BPMNShape_cancel">
+        <omgdc:Bounds height="81.0" width="135.0" x="741.0" y="340.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="950.0" y="363.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="75.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="130.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="261.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="340.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="872.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="950.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="471.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="580.0" y="258.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="600.0" y="278.0"></omgdi:waypoint>
+        <omgdi:waypoint x="600.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="741.0" y="380.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="620.0" y="258.0"></omgdi:waypoint>
+        <omgdi:waypoint x="741.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="876.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="950.0" y="380.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

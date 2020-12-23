@@ -1,0 +1,60 @@
+# Eclipse
+**/.classpath
+**/.project
+**/.settings
+**/classes/
+**/bin
+
+#Eclipse maven integration:
+.checkstyle
+.pmd
+.pmdruleset.xml
+.bpmn
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Maven
+log/
+target/
+*.pyc
+dependency-reduced-pom.xml
+
+# OS Noise
+.DS_Store
+
+.m2
+build/
+
+# Inomial ignore
+.gradle
+.classes
+classes
+*.log
+*.tar.gz
+*.tgz
+*.zip
+build
+*.ipr
+*.iws
+*.war
+*.jar
+**/docker/lib/
+
+.DS_Store
+.idea
+
+# In UNIX convention, a filename that ends in tilde is considered a backup of something.
+**/*~
+
+gradlew.bat
+docker/GROW
+
+# Postgresql dump files
+**/*.pgc
+
+# Vim temporary files
+**/*.swp
+
