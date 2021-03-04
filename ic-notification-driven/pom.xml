@@ -1,0 +1,277 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.telflow</groupId>
+    <artifactId>training</artifactId>
+    <version>${revision}${changelist}</version>
+  </parent>
+
+  <groupId>com.telflow.training</groupId>
+  <artifactId>ic-notification-driven</artifactId>
+
+  <name>Telflow :: Training :: IC Notification Driven</name>
+  <description>Telflow: Training IC Notification Driven</description>
+
+  <properties>
+    <component.name>ic-notification-driven</component.name>
+    <component.home>/opt/telflow/${component.name}</component.home>
+    <app.name>telflow-${component.name}</app.name>
+    <app.display.name>Telflow Training IC Notification Driven</app.display.name>
+
+    <assembly.templates.tempname>tmp/assembly-templates</assembly.templates.tempname>
+    <assembly.templates.tempdir>${project.build.directory}/${assembly.templates.tempname}</assembly.templates.tempdir>
+    <assembly.templates.unpackdir>${project.build.directory}/tmp/assembly-templates-unpack</assembly.templates.unpackdir>
+    <assembly.local.data.directory>${project.build.directory}/tmp/assembly-data</assembly.local.data.directory>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.telflow.cim</groupId>
+      <artifactId>cim</artifactId>
+      <version>${telflow.cim.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.cim.converter</groupId>
+      <artifactId>camel</artifactId>
+      <version>${telflow.cim.converter.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.inomial</groupId>
+      <artifactId>secore</artifactId>
+      <version>${secore.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!--  <dependency>
+      <groupId>com.telflow.factory</groupId>
+      <artifactId>common</artifactId>
+      <version>${solution.factory.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.factory</groupId>
+      <artifactId>logging</artifactId>
+      <version>${solution.factory.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.factory</groupId>
+      <artifactId>configuration-management</artifactId>
+      <version>${solution.factory.version}</version>
+    </dependency> -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>${groovy.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.fabric.test</groupId>
+      <artifactId>fabric-test</artifactId>
+      <version>${telflow.fabric.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Jar plugin -->
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven.jar.plugin.version}</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>com.telflow.training.ic.Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <!-- Resources plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy template files (WITH property replacements) to assembly files</id>
+            <!-- choose a phase after 'default-assembly': -->
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${assembly.templates.tempdir}</outputDirectory>
+              <escapeString>\</escapeString>
+              <overwrite>true</overwrite>
+              <fileNameFiltering>true</fileNameFiltering>
+              <resources>
+                <resource>
+                  <directory>${assembly.templates.unpackdir}</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy child root files</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${child.root.name}</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/${sourcePath}</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copyDockerFiles</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${docker.build.dir}</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/main/docker</directory>
+                  <filtering>true</filtering>
+                </resource>
+                <resource>
+                  <directory>${project.basedir}/*.jar</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+              <escapeString>\</escapeString>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Groovy plugin -->
+      <plugin>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+      </plugin>
+      <!-- Docker plugin -->
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>${docker.maven.plugin.version}</version>
+        <configuration>
+          <skip>false</skip>
+          <images>
+            <image>
+              <external>
+                <type>properties</type>
+                <mode>fallback</mode>
+              </external>
+              <name>${docker.registry}/${app.name}:${docker.preciseVersion}</name>
+              <build>
+                <from>${docker.registry}/alpine_tf_java:8</from>
+                <env>
+                  <DISABLE_AUTH_HTTP>true</DISABLE_AUTH_HTTP>
+                  <LOG4J_CONFIGURATION_FILE>${component.home}/resources/log4j2.xml</LOG4J_CONFIGURATION_FILE>
+                </env>
+                <entryPoint>
+                  <arg>/docker-entrypoint.sh</arg>
+                </entryPoint>
+                <tags>
+                  <tag>${docker.currentVersion}</tag>
+                  <tag>latest</tag>
+                </tags>
+                <labels>
+                  <Maintainer>DGIT Systems</Maintainer>
+                  <Application>Telflow</Application>
+                  <Component>${component.name}</Component>
+                  <Version>${docker.preciseVersion}</Version>
+                  <com.telflow.build-version>${docker.preciseVersion}</com.telflow.build-version>
+
+                  <org.label-schema.schema-version>1.0</org.label-schema.schema-version>
+                  <org.label-schema.build-date>${build.time}</org.label-schema.build-date>
+                  <org.label-schema.name>${project.name}</org.label-schema.name>
+                  <org.label-schema.description>${project.description}</org.label-schema.description>
+                  <org.label-schema.vcs-ref>${buildNumber}</org.label-schema.vcs-ref>
+                  <org.label-schema.docker.params>
+                    FABRIC_ENDPOINT=url to send fabric requests,
+                    FABRIC_USER=fabric basic auth username,
+                    FABRIC_PASSWORD=fabric basic auth password
+                  </org.label-schema.docker.params>
+                </labels>
+                <assembly>
+                  <mode>dir</mode>
+                  <targetDir>/</targetDir>
+                  <descriptor>assembly.xml</descriptor>
+                  <user>telflow:telflow</user>
+                </assembly>
+                <user>telflow</user>
+              </build>
+            </image>
+          </images>
+        </configuration>
+        <executions>
+          <execution>
+            <id>buildDockerImage</id>
+            <phase>package</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Build helper plugin -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>parse-version</id>
+            <goals>
+              <goal>parse-version</goal>
+              <goal>cpu-count</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

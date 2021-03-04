@@ -398,8 +398,8 @@
 
     <repositories>
         <repository>
-            <id>nexus-releases</id>
-            <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-releases</url>
+            <id>telflow-remote-nexus</id>
+            <url>https://nexus.support.telflow.com/content/repositories/telflow-release</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -408,13 +408,13 @@
             </releases>
         </repository>
         <repository>
-            <id>nexus-snapshots</id>
-            <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-snapshots</url>
+            <id>telflow-remote-nexus-SNAPSHOT</id>
+            <url>https://nexus.support.telflow.com/content/repositories/telflow-snapshot</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
             <releases>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </releases>
         </repository>
         <repository>
@@ -433,7 +433,7 @@
         <pluginRepository>
             <id>release</id>
             <name>DGiT Release Repository</name>
-            <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-releases</url>
+            <url>https://nexus.support.telflow.com/content/repositories/telflow-release</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
