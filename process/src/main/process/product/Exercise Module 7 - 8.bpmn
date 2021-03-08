@@ -14,12 +14,12 @@
       <extensionElements>
         <activiti:taskListener event="create" class="com.telflow.process.listeners.task.TaskVariablePreparation">
           <activiti:field name="taskSpecificationId">
-            <activiti:string><![CDATA[SPC000000000019]]></activiti:string>
+            <activiti:string><![CDATA[SPC000000002219]]></activiti:string>
           </activiti:field>
         </activiti:taskListener>
         <activiti:taskListener event="complete" class="com.telflow.process.listeners.task.MapCharacteristics">
           <activiti:field name="mapping">
-            <activiti:string><![CDATA[{"confirmOrder":"//confirmOrder"}]]></activiti:string>
+            <activiti:string><![CDATA[{"confirmOrder":"//confirmOrder","cancellationReason":"//cancellationReason"}]]></activiti:string>
           </activiti:field>
         </activiti:taskListener>
       </extensionElements>

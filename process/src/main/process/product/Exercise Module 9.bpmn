@@ -55,7 +55,7 @@
       <extensionElements>
         <activiti:executionListener event="end" class="com.telflow.process.listeners.event.EventHandler">
           <activiti:field name="specificationId">
-            <activiti:string><![CDATA[SPC000000000057]]></activiti:string>
+            <activiti:string><![CDATA[SPC000000003057]]></activiti:string>
           </activiti:field>
           <activiti:field name="specificationName">
             <activiti:string><![CDATA[Training Status Update]]></activiti:string>
