@@ -28,6 +28,11 @@
       <Name>Cancel</Name>
       <Type>EndFailure</Type>
     </LifecycleState>
+    <LifecycleState>
+      <ID>Rejected</ID>
+      <Name>Rejected</Name>
+      <Type>EndFailure</Type>
+    </LifecycleState>
   </LifecycleStates>
   <Transitions>
     <Transition>
@@ -76,6 +81,28 @@
         <PartyRoleType>System</PartyRoleType>
       </PartyRoleTypes>
     </Transition>
+    <Transition>
+      <Name>Reject</Name>
+      <Input>
+        <ID>In Progress</ID>
+      </Input>
+      <Output>
+        <ID>Rejected</ID>
+      </Output>
+      <PartyRoleTypes>
+        <PartyRoleType>Provider</PartyRoleType>
+        <PartyRoleType>System</PartyRoleType>
+      </PartyRoleTypes>
+      <LifecycleTransitionReason>
+        <Name>Rejection Reason</Name>
+        <Reasons>
+          <Reason>Unavailable Resource</Reason>
+          <Reason>Invalid Order Details</Reason>
+        </Reasons>
+        <IsRequired>true</IsRequired>
+        <AllowCustomReason>true</AllowCustomReason>
+      </LifecycleTransitionReason>
+    </Transition>
   </Transitions>
   <Permissions>
     <Permission>
@@ -111,6 +138,16 @@
     <Permission>
       <State>
         <ID>Cancel</ID>
+      </State>
+      <AccessLevel>ReadUpdate</AccessLevel>
+      <PartyRoleTypes>
+        <PartyRoleType>Provider</PartyRoleType>
+        <PartyRoleType>System</PartyRoleType>
+      </PartyRoleTypes>
+    </Permission>
+    <Permission>
+      <State>
+        <ID>Rejected</ID>
       </State>
       <AccessLevel>ReadUpdate</AccessLevel>
       <PartyRoleTypes>
