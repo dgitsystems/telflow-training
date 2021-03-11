@@ -26,9 +26,9 @@
         <telflow.fabric.version>11.2.0</telflow.fabric.version>
         <telflow.process.version>11.2.0</telflow.process.version>
         <telflow.pricing.version>11.2.0</telflow.pricing.version>
-        <solution.factory.version>2.1.0-SNAPSHOT</solution.factory.version>
+        <solution.factory.version>2.1.0</solution.factory.version>
         <consul.client.version>1.4.2</consul.client.version>
-        <tmf.core.version>2.1.0-SNAPSHOT</tmf.core.version>
+        <tmf.core.version>2.1.0</tmf.core.version>
         <secore.version>2.4.13</secore.version>
 
         <!-- telflow docker versions -->
@@ -335,50 +335,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven.checkstyle.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>checkstyle</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <failOnViolation>true</failOnViolation>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.dgitsystems.tools</groupId>
-                        <artifactId>telflow-checkstyle-rules</artifactId>
-                        <version>${telflow-checkstyle-rules.version}</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <configLocation>telflow/checkstyle.xml</configLocation>
-                    <suppressionsLocation>telflow/suppressions.xml</suppressionsLocation>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>${maven.pmd.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>maven-pmd-plugin</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                            <goal>cpd-check</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

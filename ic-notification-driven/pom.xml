@@ -48,7 +48,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!--  <dependency>
+    <dependency>
       <groupId>com.telflow.factory</groupId>
       <artifactId>common</artifactId>
       <version>${solution.factory.version}</version>
@@ -62,7 +62,7 @@
       <groupId>com.telflow.factory</groupId>
       <artifactId>configuration-management</artifactId>
       <version>${solution.factory.version}</version>
-    </dependency> -->
+    </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
