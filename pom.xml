@@ -26,9 +26,9 @@
         <telflow.fabric.version>11.2.0</telflow.fabric.version>
         <telflow.process.version>11.2.0</telflow.process.version>
         <telflow.pricing.version>11.2.0</telflow.pricing.version>
-        <solution.factory.version>2.1.0</solution.factory.version>
+        <solution.factory.version>2.1.0-SNAPSHOT</solution.factory.version>
         <consul.client.version>1.4.2</consul.client.version>
-        <tmf.core.version>2.1.0</tmf.core.version>
+        <tmf.core.version>2.1.0-SNAPSHOT</tmf.core.version>
         <secore.version>2.4.13</secore.version>
 
         <!-- telflow docker versions -->
@@ -86,7 +86,7 @@
         <!-- docker -->
         <docker.version>${project.version.majorVersion}.${project.version.minorVersion}</docker.version>
         <docker.longVersion>${project.version.majorVersion}.${project.version.minorVersion}.${project.version.incrementalVersion}</docker.longVersion>
-        <docker.registry>registry.cloud.telflow.com/dgit_private</docker.registry>
+        <docker.registry>registry.cloud.telflow.com/dgit_training</docker.registry>
         <docker.build.dir>${project.build.directory}/dockerInclude</docker.build.dir>
         <assembly.name>${app.name}-${docker.longVersion}</assembly.name>
         <docker.tagging-strategy>3</docker.tagging-strategy>
