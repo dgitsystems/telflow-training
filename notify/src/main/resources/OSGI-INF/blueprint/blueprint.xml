@@ -1,0 +1,40 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:camel="http://camel.apache.org/schema/blueprint"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:shell="http://karaf.apache.org/xmlns/shell/v1.0.0"
+           xmlns:cxf="http://cxf.apache.org/blueprint/core"
+           xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+           xmlns:sec="http://cxf.apache.org/configuration/security"
+  xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd
+        http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd
+        http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd
+        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
+
+  <cm:property-placeholder persistent-id="com.telflow.notify.training" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="notify.delivery.file.base" value="/tmp"/>
+
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <bean id="http4" class="org.apache.camel.component.http4.HttpComponent">
+    <property name="connectionTimeToLive" value="${http.telflow.fabric.connectionTimeToLive}"/>
+  </bean>
+
+  <!-- A service to allow for marshalling / unmarshalling -->
+  <reference id="cimConverter" interface="com.telflow.cim.converter.CimConverter"/>
+
+  <!-- Delivery plugin to create file containing Notification -->
+  <bean id="delivery-file-plugin" class="com.telflow.notify.training.FileDeliveryPlugin">
+    <argument value="${notify.delivery.file.base}" />
+  </bean>
+  <service id="delivery-file-plugin-service" ref="delivery-file-plugin" auto-export="interfaces" >
+    <service-properties>
+      <entry key="service-type" value="file" />
+    </service-properties>
+  </service>
+
+</blueprint>

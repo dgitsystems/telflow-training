@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.telflow</groupId>
+    <artifactId>training</artifactId>
+    <version>${revision}${changelist}</version>
+    <relativePath>../</relativePath>
+  </parent>
+
+  <artifactId>training-notify</artifactId>
+  <name>Telflow Training :: Telflow Notify :: Solution Configuration</name>
+
+  <packaging>bundle</packaging>
+    
+  <scm>
+    <connection>scm:git:git://localhost/${basedir}</connection>
+  </scm>
+
+  <properties>
+    <revision>1.0.0</revision>
+    <changelist>-SNAPSHOT</changelist>
+    
+    <app.name>telflow-training-notify</app.name>
+    <bundle.export.package>
+      com.telflow.training.notify
+    </bundle.export.package>
+    <docker.build.dir>${project.build.directory}/dockerInclude</docker.build.dir>
+    
+    <!-- Telflow -->
+    <telflow.version>11.1.0</telflow.version>
+    <telflow.notify.version>11.1.0</telflow.notify.version>
+    <telflow.notify.docker.tag>${telflow.version}</telflow.notify.docker.tag>
+
+    <!-- distribution -->
+    <dist.id>nexus</dist.id>
+    <dist.release>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-releases</dist.release>
+    <dist.snapshot>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-snapshots</dist.snapshot>
+
+    <!-- Docker -->
+    <sourcePath>report-templates</sourcePath>
+    <!-- Solution containers must have app name as telflow-solutionName-componentName to satisfy ansible -->
+    <app.name>telflow-training-notify</app.name>
+    <notify.definitions.dir>definitions</notify.definitions.dir>
+    <notify.profiles.dir>profiles</notify.profiles.dir>
+    <notify.templates.dir>templates</notify.templates.dir>
+    <docker.build.dir>${project.build.directory}/dockerInclude</docker.build.dir>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <version>${osgi.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.cim</groupId>
+      <artifactId>cim</artifactId>
+      <version>${telflow.cim.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>${groovy.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.notify</groupId>
+      <artifactId>notify-api</artifactId>
+      <version>${telflow.notify.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.fabric.test</groupId>
+      <artifactId>fabric-test</artifactId>
+      <version>${telflow.fabric.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+      </plugin>
+<!--      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.8</version>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.telflow.factory</groupId>
+                  <artifactId>configuration-management</artifactId>
+                  <version>${solution.factory.version}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.orbitz.consul</groupId>
+                  <artifactId>consul-client</artifactId>
+                  <version>${consul.client.version}</version>
+                  <classifier>shaded</classifier>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${docker.build.dir}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin> -->
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>${maven.bundle.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <buildDirectory>${docker.build.dir}</buildDirectory>
+          <instructions>
+            <Bundle-ClassPath>.</Bundle-ClassPath>
+            <Bundle-SymbolicName>${bundle.symbolic.name}</Bundle-SymbolicName>
+            <Import-Package>${bundle.import.package},*</Import-Package>
+            <Export-Package>${bundle.export.package}</Export-Package>
+            <Telflow-ChangeSet>${buildNumber}</Telflow-ChangeSet>
+          </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy reference fabric docker files</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${docker.build.dir}</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/main/docker</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+              <escapeString>\</escapeString>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>${docker.maven.plugin.version}</version>
+        <configuration>
+          <verbose>true</verbose>
+          <images>
+            <image>
+              <name>${docker.registry}/${app.name}:${docker.preciseVersion}</name>
+              <build>
+                <dockerFile>${docker.build.dir}/Dockerfile</dockerFile>
+                <contextDir>${docker.build.dir}</contextDir>
+                <tags>
+                  <tag>latest</tag>
+                  <tag>${docker.currentVersion}</tag>
+                </tags>
+              </build>
+            </image>
+          </images>
+        </configuration>
+        <executions>
+          <execution>
+            <id>buildDockerImage</id>
+            <phase>package</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>nexus</id>
+      <name>Internal Releases</name>
+      <url>${dist.release}/</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus</id>
+      <name>Internal Releases</name>
+      <url>${dist.snapshot}/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>nexus-releases</id>
+      <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-releases</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>nexus-snapshots</id>
+      <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>inomial-nexus</id>
+      <name>Inomial Releases</name>
+      <url>https://maven.inomial.com</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
+</project>
