@@ -7,10 +7,6 @@
     <version>${revision}${changelist}</version>
     <name>Telflow Training Solution multi-module parent</name>
 
-    <scm>
-        <connection>scm:git:git://localhost/${basedir}</connection>
-    </scm>
-
     <properties>
         <!-- versions supplied by the CI system -->
         <revision>1.0.0</revision>
@@ -86,7 +82,7 @@
         <!-- docker -->
         <docker.version>${project.version.majorVersion}.${project.version.minorVersion}</docker.version>
         <docker.longVersion>${project.version.majorVersion}.${project.version.minorVersion}.${project.version.incrementalVersion}</docker.longVersion>
-        <docker.registry>registry.cloud.telflow.com/dgit_training</docker.registry>
+        <docker.registry>registry.cloud.telflow.com/dgit_private</docker.registry>
         <docker.build.dir>${project.build.directory}/dockerInclude</docker.build.dir>
         <assembly.name>${app.name}-${docker.longVersion}</assembly.name>
         <docker.tagging-strategy>3</docker.tagging-strategy>
@@ -120,19 +116,12 @@
 
     <modules>
         <module>process</module>
+        <module>pricing</module>
+        <module>file-artefact-storage</module>
+        <module>notify</module>
     </modules>
 
     <dependencies>
-        <dependency>
-            <groupId>com.telflow.factory</groupId>
-            <artifactId>logging</artifactId>
-            <version>${solution.factory.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.telflow.factory</groupId>
-            <artifactId>authentication</artifactId>
-            <version>${solution.factory.version}</version>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -156,19 +145,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
                     <version>${maven-install-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>${maven.buildnumber.version}</version>
-                    <executions>
-                        <execution>
-                            <id>extract-git-information</id>
-                            <goals>
-                                <goal>create</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
