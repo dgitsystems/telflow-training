@@ -1,0 +1,134 @@
+{% macro renderParty(partyInteractionRoles, type, header) %}
+  {% for role in partyInteractionRoles %}
+    {% if role.interactionRoleType == type %}
+  <tr>
+    <td>{{header}}</td>
+    <td><b>{{role.partyRole.party.name}}</b></td>
+  </tr>
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% set assignee = "Unassigned" %}
+{% for role in entity.involvesParties.partyInteractionRole %}
+  {% if role.interactionRoleType == "ASSIGNEE" and role.partyRole.party.name is not empty %}
+    {% set assignee = "Assigned" %}
+  {% endif %}
+{% endfor %}
+
+<table class="characteristic-block" cellspacing="0" cellpadding="0" width="100%" align="left" style="border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+  <tr>
+    <td class="header-sm">
+      Task Summary
+    </td>
+  </tr>
+  <tr>
+    <td>Task ID</td>
+    <td><a href="{{portalHost}}/portal/tasks/search/{{notificationProperties.taskId}}">{{notificationProperties.taskId}}</a></td>
+  </tr>
+  {{ renderParty(entity.involvesParties.partyInteractionRole, "COMMERCIALLY_RESPONSIBLE", "Customer")}}
+  {{ renderParty(entity.involvesParties.partyInteractionRole, "TEAM", "Team")}}
+  {% if entity.category == "INSTANT" %}
+    {{ renderParty(entity.involvesParties.partyInteractionRole, "SUBMITTER", "Created By")}}
+  {% endif %}
+  {% if assignee == "Assigned" %}
+    {{ renderParty(entity.involvesParties.partyInteractionRole, "ASSIGNEE", "Assignee")}}
+  {% else %}
+  <tr>
+    <td>Assignee</td>
+    <td><b>{{assignee}}</b></td>
+  </tr>
+  {% endif %}
+  <tr>
+    <td>Request ID</td>
+    {% set orderIdPrefix = entity.businessInteractionID | slice(0,3) %}
+    {% if orderIdPrefix == "SAO" %}
+    <td><a href="{{portalHost}}/portal/fulfilment/order/manage/sales/{{entity.businessInteractionID}}">{{entity.businessInteractionID}}</a></td>
+    {% else %}
+    <td><a href="{{portalHost}}/portal/fulfilment/order/manage/order/{{entity.businessInteractionID}}">{{entity.businessInteractionID}}</a></td>
+    {% endif %}
+  </tr>
+  {% if notificationProperties.notificationType == 'Task Snooze Expired' %}
+  <tr>
+    <td>Status</td>
+    <td><b>SNOOZE EXPIRED</b></td>
+  </tr>
+  {% elseif entity.taskSnooze.isSnoozing == true %}
+  <tr>
+    <td>Status</td>
+    <td><b>SNOOZED</b></td>
+  </tr>
+  <tr>
+    <td>Snooze Until</td>
+    <td>{{entity.taskSnooze.snoozeUntil}}</td>
+  </tr>
+  <tr>
+    <td>Last Snoozed By</td>
+    <td>{{entity.taskSnooze.snoozedBy.party.name}}</td>
+  </tr>
+  <tr>
+    <td>Snoozed Reason</td>
+    <td>{{entity.taskSnooze.snoozeReason}}</td>
+  </tr>
+  {% else %}
+  <tr>
+    <td>Status</td>
+    <td><b>{{entity.status}}</b></td>
+  </tr>
+  {% endif %}
+  <tr>
+    <td>Priority</td>
+    <td>
+       {% if entity.priority == 40 %}
+        {{"Low"}}
+      {% elseif entity.priority == 60 %}
+        {{"Medium"}}
+      {% elseif entity.priority == 70 %}
+        {{"High"}}
+      {% elseif entity.priority == 80  %}
+        {{"Critical"}}
+      {% else %}
+        {{"Not specified"}}
+      {% endif %}
+   </td>
+  </tr>
+  <tr>
+    <td>Due Date</td>
+    <td>{{entity.dueDate}}</td>
+  </tr>
+  <tr>
+    <td>Jeopardy Date</td>
+    <td>{{entity.jeopardyDate}}</td>
+  </tr>
+  {% if assignee == "Assigned" %}
+  <tr>
+    <td>Claim Date</td>
+    <td>{{entity.claimDate}}</td>
+  </tr>
+  {% endif %}
+  {% if entity.status == "COMPLETE" %}
+  <tr>
+    <td>Completion Date</td>
+    <td>{{entity.completionDate}}</td>
+  </tr>
+  {% endif %}
+  {% if entity.notes is not empty %}
+    {% set headerRendered = false %}
+    {% for note in entity.notes %}
+      {% if note.creatorName != 'System' %}
+        {% if headerRendered == false %}
+          <tr>
+            <td class="header-sm">
+              Task Notes
+            </td>
+          </tr>
+          {% set headerRendered = true %}
+        {% endif %}
+        <tr>
+          <td>Note</td>
+          <td>{{note.description}}</td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</table>

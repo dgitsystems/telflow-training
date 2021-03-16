@@ -1,0 +1,26 @@
+{% import "utility.peb" %}
+
+{% if businessInteraction.notes is not null%}
+  <table class="characteristic-block" cellspacing="0" cellpadding="0" width="100%" align="left" style="border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+    {% for note in businessInteraction.notes %}
+      {% if note.description is not empty %}
+        {% if loop.index + 1 == loop.length %}
+          <tr>
+            <td class="header-sm">
+              Order Notes
+            </td>
+          </tr>
+          <tr>
+            <td class="header-xs">{{note.name}}</td>
+          </tr>
+          <tr>
+            <td class="user-msg">{{note.description}}</td>
+          </tr>
+          <tr>
+            <td class="split-msg">----</td>
+          </tr>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </table>
+{% endif %}

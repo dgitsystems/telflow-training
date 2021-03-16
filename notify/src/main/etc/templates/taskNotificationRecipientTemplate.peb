@@ -1,0 +1,28 @@
+{% import "utility.peb" %}
+{% if entity.status == "COMPLETE" %}
+{% set submitterContact = generateContactEmail("SUBMITTER", entity.involvesParties.partyInteractionRole, "CONTACT") %}
+{% set submitterNotification = generateContactEmail("SUBMITTER", entity.involvesParties.partyInteractionRole, "NOTIFICATION") %}
+{% if entity.category == "INSTANT" %}
+{% if submitterContact != "" %}
+{{ submitterContact | raw }}
+{% endif %}
+{% if submitterNotification != "" %}
+{{ submitterNotification | raw }}
+{% endif %}
+{% endif %}
+{% else %}
+{% set teamContact = generateContactEmail("TEAM", entity.involvesParties.partyInteractionRole, "CONTACT") %}
+{% if teamContact != "" %}
+{{ teamContact | raw }}
+{% endif %}
+{% if entity.taskSnooze.snoozeUntil is empty %}
+{% set assigneeContact = generateContactEmail("ASSIGNEE", entity.involvesParties.partyInteractionRole, "CONTACT") %}
+{% set assigneeNotification = generateContactEmail("ASSIGNEE", entity.involvesParties.partyInteractionRole, "NOTIFICATION") %}
+{% if assigneeContact != "" %}
+{{ assigneeContact | raw }}
+{% endif %}
+{% if assigneeNotification != "" %}
+{{ assigneeNotification | raw }}
+{% endif %}
+{% endif %}
+{% endif %}

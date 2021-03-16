@@ -1,0 +1,78 @@
+{% macro renderCharacteristics(characteristics, padding) %}
+  {% if characteristics is not null and characteristics.entrySet is iterable %}
+    {% for characteristicValue in characteristics.entrySet %}
+      {% if characteristicValue.value is not iterable %}
+      <tr>
+        <td class="w275" width="275" nowrap>
+          <singleline>{{padding | raw}}{{characteristicValue.key | raw}}</singleline>
+        </td>
+        <td class="w275" width="275">
+          {{characteristicValue.value | raw}}
+        </td>
+      </tr>
+      {% else %}
+        {% for currentValue in characteristicValue.value %}
+          <tr>
+            <td class="w275" width="275" nowrap>
+              <singleline>{{padding | raw}}{{characteristicValue.key | raw}}</singleline>
+            </td>
+            <td class="w275" width="275">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+          </tr>
+          {{ renderCharacteristics(currentValue, padding + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;") }}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
+{% macro renderRow(header, field) %}
+
+{% if field is not null %}
+<tr>
+  <td class="w275" width="275">{{header}}</td>
+  <td class="w275" width="275">{{field}}</td>
+</tr>
+{% endif %}
+
+{% endmacro%}
+
+{% macro renderParty(title, partyType, partyInteractionRole) %}
+
+  <tr>
+    <td class="w275" width="275" valign="top">{{title}}</td>
+    <td class="w275" width="275">
+      <table border="0" cellpadding="0" cellspacing="0">
+    {% for interactionRole in partyInteractionRole %}
+    {% if interactionRole.interactionRoleType == partyType %}
+        <tr>
+          <td>{{interactionRole.partyRole.party.name}}</td>
+        </tr>
+      {% for medium in interactionRole.partyRole.contactMediums %}
+        {% if medium.emailAddress is not null and medium.description is null %}
+          <tr><td>{{medium.emailAddress}}</td></tr>
+        {% elseif medium.number is not null%}
+          <tr><td>{{medium.countryCode}} {{medium.areaCode}} {{medium.number}}</td></tr>
+        {% endif %}
+      {% endfor %}
+    {% endif%}
+    {% endfor %}
+      </table>
+    </td>
+  </tr>
+
+{% endmacro %}
+
+{%- macro generateContactEmail(partyType, partyInteractionRoles, type) -%}
+  {%- for partyInteractionRole in partyInteractionRoles -%}
+    {%- if partyInteractionRole.interactionRoleType == partyType -%}
+      {%- for contactMedium in partyInteractionRole.partyRole.contactMediums -%}
+        {%- if contactMedium.emailAddress is not null and contactMedium.type == type -%}
+          {%- if contactMedium.name is not null and contactMedium.name != "Self" -%}
+            {{- contactMedium.name -}}
+          {%- else %}
+            {{- partyInteractionRole.partyRole.party.name -}}
+          {%- endif %} <{{- contactMedium.emailAddress }}>, {% endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endmacro -%}

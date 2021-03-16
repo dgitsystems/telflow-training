@@ -1,0 +1,96 @@
+{% import "utility.peb" %}
+{% macro renderChargeGroupDetail(chargeGroup) %}
+  {% for chargeGroupItem in chargeGroup %}
+    {% if chargeGroupItem.name == "Monthly" or chargeGroupItem.name == "Upfront"%}
+      <tr>
+        <td class="w275" width="275" valign="top" style="vertical-align:top">
+          Total {{chargeGroupItem.name}}
+        </td>
+        <td class="w275" width="275" align="right">
+          <div style="width: 60%; text-align: right;">{{chargeGroupItem.totalPrice}}</div>
+        </td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% if businessInteraction.contractSummary is not null %}
+  <table class="characteristic-block" cellspacing="0" cellpadding="0" width="100%" align="left" style="border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+    <tr>
+      <td class="header-sm">
+        Price Summary
+      </td>
+    </tr>
+
+    {{renderChargeGroupDetail(businessInteraction.contractSummary.chargeGroups.chargeGroup)}}
+
+    {% if businessInteraction.contractSummary.contractTerm is not empty %}
+      <tr>
+        <td class="w275" width="275" valign="top" style="vertical-align:top">
+          Contract
+        </td>
+        <td class="w275" width="275"></td>
+      </tr>
+      {% if businessInteraction.contractSummary.contractTerm.changeAction is not empty %}
+        <tr>
+         <td class="w275" width="275" valign="top" style="vertical-align:top">
+           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Contract Change
+         </td>
+         <td class="w275" width="275">
+           <div style="width: 60%; text-align: right;">{{businessInteraction.contractSummary.contractTerm.changeAction}}</div>
+         </td>
+        </tr>
+      {% endif %}
+      {% if businessInteraction.contractSummary.contractTerm.description is not empty %}
+        <tr>
+         <td class="w275" width="275" valign="top" style="vertical-align:top">
+           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Term
+         </td>
+         <td class="w275" width="275">
+           <div style="width: 60%; text-align: right;">{{businessInteraction.contractSummary.contractTerm.description}}</div>
+         </td>
+        </tr>
+      {% endif %}
+    {% endif %}
+
+    {% if businessInteraction.businessInteractionComprisedOf is not null %}
+      {% for customerOrderItem in businessInteraction.businessInteractionComprisedOf %}
+        {% for inventoryEntity in customerOrderItem.itemInvolvesInventoryEntities %}
+          <tr>
+            <td class="w275" width="275" valign="top" style="vertical-align:top">
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start Date
+            </td>
+            <td class="w275" width="275">
+               <div style="width: 60%; text-align: right;">{{inventoryEntity.contractSummary.contractStartDate}}<div>
+            </td>
+          </tr>
+          <tr>
+            <td class="w275" width="275" valign="top" style="vertical-align:top">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;End Date
+            </td>
+            <td class="w275" width="275">
+               <div style="width: 60%; text-align: right;">{{inventoryEntity.contractSummary.contractEndDate}}<div>
+            </td>
+          </tr>
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+
+    <tr>
+      <td class="w275" width="275" valign="top" style="vertical-align:top">
+        Total Value
+      </td>
+      <td class="w275" width="275">
+        <div style="width: 60%; text-align: right;">{{businessInteraction.contractSummary.totalContractValue}}</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="w275" width="275" valign="top" style="vertical-align:top">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ businessInteraction.contractSummary.taxDescription}} {{businessInteraction.contractSummary.taxType}} of
+      </td>
+      <td class="w275" width="275">
+        <div style="width: 60%; text-align: right;">{{businessInteraction.contractSummary.totalTax}}</div>
+      </td>
+    </tr>
+  </table>
+{% endif %}

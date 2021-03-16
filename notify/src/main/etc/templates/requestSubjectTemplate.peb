@@ -1,0 +1,27 @@
+{% if processedTypes.Amendment is not empty %}
+    {%- set displayType = processedTypes.Amendment[0] %}
+    {%- set displayTypePrefix = "Amended" %}
+{% endif %}
+{% if processedTypes.SubState is not empty %}
+    {%- set displayType = processedTypes.SubState[0] %}
+    {%- set displayTypePrefix = businessInteraction.interactionStatus.name %}
+{% endif %}
+{% if processedTypes.Status is not empty %}
+    {%- set displayType = processedTypes.Status[0] %}
+    {%- set displayTypePrefix = null %}
+{% endif %}
+{% set biType = businessInteraction.specifiedBy.name %}
+{% set orderType = "" %}
+{% if businessInteraction["@type"] == "CustomerOrder" %}
+    {%- set biType = "Order" %}
+{% elseif businessInteraction["@type"] == "SalesOrder" %}
+    {%- if biType == "General Sales Order (New, Change and Terminate)" -%}
+        {%- set orderType = "GENERAL " -%}
+    {%- elseif biType == "Simple Configuration Changes (TSG Initiated)" -%}
+        {%- set orderType = "SIMPLE " -%}
+    {%- endif -%}
+    {%- set biType = "Sales Order" -%}
+{% endif %}
+{{businessInteraction.id}}: {{orderType}}{% if businessInteraction.orderType != null %}{{businessInteraction.orderType}} {% endif %}{{biType}}
+ - {% if displayTypePrefix != null %}{{displayTypePrefix}} - {% endif -%}
+{{displayType}}

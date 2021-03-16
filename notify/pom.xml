@@ -30,8 +30,8 @@
     <docker.build.dir>${project.build.directory}/dockerInclude</docker.build.dir>
     
     <!-- Telflow -->
-    <telflow.version>11.1.0</telflow.version>
-    <telflow.notify.version>11.1.0</telflow.notify.version>
+    <telflow.version>11.2.0</telflow.version>
+    <telflow.notify.version>11.2.0</telflow.notify.version>
     <telflow.notify.docker.tag>${telflow.version}</telflow.notify.docker.tag>
 
     <!-- distribution -->
@@ -78,15 +78,20 @@
       <version>${telflow.notify.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.telflow.fabric.test</groupId>
-      <artifactId>fabric-test</artifactId>
-      <version>${telflow.fabric.version}</version>
-      <scope>test</scope>
+      <groupId>com.telflow.notify</groupId>
+      <artifactId>notify-artefact-template-plugin</artifactId>
+      <version>${telflow.notify.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>${commons-io.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.fabric.test</groupId>
+      <artifactId>fabric-test</artifactId>
+      <version>${telflow.fabric.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -167,6 +172,22 @@
               <escapeString>\</escapeString>
             </configuration>
           </execution>
+          <execution>
+            <id>copy notify pebble templates</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${docker.build.dir}/templates</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/main/etc/templates</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -205,52 +226,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <distributionManagement>
-    <repository>
-      <id>nexus</id>
-      <name>Internal Releases</name>
-      <url>${dist.release}/</url>
-    </repository>
-    <snapshotRepository>
-      <id>nexus</id>
-      <name>Internal Releases</name>
-      <url>${dist.snapshot}/</url>
-    </snapshotRepository>
-  </distributionManagement>
-
-  <repositories>
-    <repository>
-      <id>nexus-releases</id>
-      <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-releases</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-    <repository>
-      <id>nexus-snapshots</id>
-      <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories/dgit-maven-snapshots</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-    <repository>
-      <id>inomial-nexus</id>
-      <name>Inomial Releases</name>
-      <url>https://maven.inomial.com</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-  </repositories>
 
 </project>

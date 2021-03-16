@@ -1,0 +1,24 @@
+{% import "utility.peb" %}
+<table class="characteristic-block" cellspacing="0" cellpadding="0" width="100%" align="left" style="border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+  <tr>
+    <td class="header-sm">
+      Recent Activity
+    </td>
+  </tr>
+{% if processedTypes.Status is not empty and processedTypes.SubState is empty %}
+  <tr>
+    <td>{{businessInteraction.interactionStatus.name}}</td>
+  </tr>
+{% elseif processedTypes.SubState is not empty %}
+  <tr>
+    <td>{{businessInteraction.interactionStatus.name}} - {{businessInteraction.interactionSubState}}</td>
+  </tr>
+{% endif %}
+{% if processedTypes.Amendment is not empty %}
+  {% for amend in processedTypes.Amendment %}
+  <tr>
+    <td>Amended - {{amend}}</td>
+  </tr>
+{% endfor %}
+{% endif %}
+</table>

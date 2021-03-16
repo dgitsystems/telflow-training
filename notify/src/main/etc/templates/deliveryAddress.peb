@@ -1,0 +1,43 @@
+{% macro renderAddress(placeInteractionRoles) %}
+    {% set headerRendered = false %}
+    {% for placeInteractionRole in placeInteractionRoles %}
+        {% if placeInteractionRole.interactionRoleType == "SERVICE_ACCESS_TO" %}
+            {% if headerRendered == false %}
+            <tr>
+              <td class="header-sm">
+                Delivery Address
+              </td>
+            </tr>
+            {% endif %}
+            {% set headerRendered = true %}
+{% if  placeInteractionRole.place.addressProvider is not null and placeInteractionRole.place.addressProvider == "Manual"  %}
+            <tr>
+              <td>{{ placeInteractionRole.place.name }}</td>
+            </tr>
+{% else %}
+            <tr>
+              <td>{{ placeInteractionRole.place.formattedLocalAddress }} {{ placeInteractionRole.place.formattedAddress }}</td>
+            </tr>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+<table class="characteristic-block" cellspacing="0" cellpadding="0" width="100%">
+  {% set headerRendered = false %}
+  {% if businessInteraction["@type"] == "CustomerOrder" %}
+    {% if businessInteraction.businessInteractionComprisedOf is not null %}
+        {% for customerOrderItem in businessInteraction.businessInteractionComprisedOf %}
+            {% if customerOrderItem.action == "NO_CHANGE" %}
+                {% for itemRelationship in customerOrderItem.businessInteractionItemRelationships.businessInteractionItemRelationship %}
+                    {{ renderAddress(itemRelationship.businessInteractionItem.itemInvolvesLocations.placeInteractionRole) }}
+                {% endfor %}
+            {% else %}
+              {{ renderAddress(customerOrderItem.itemInvolvesLocations.placeInteractionRole) }}
+          {% endif %}
+        {% endfor %}
+    {% endif %}
+  {% else %}
+    {{ renderAddress(businessInteraction.businessInteractionLocations.placeInteractionRole) }}
+  {% endif %}
+</table>

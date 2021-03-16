@@ -1,0 +1,1 @@
+{{notificationProperties.notificationType}}: {{entity.businessInteractionID}} {{entity.name}}

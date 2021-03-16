@@ -1,0 +1,60 @@
+{% import "utility.peb" %}
+
+{% macro renderPartyRow(partyInteractionRoles, type, header) %}
+  {% for role in partyInteractionRoles %}
+    {% if role.interactionRoleType == type %}
+  <tr>
+    <td>{{header}}</td>
+    <td><b>{{role.partyRole.party.name}}</b></td>
+  </tr>
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+<table class="characteristic-block" cellspacing="0" cellpadding="0" width="100%" align="left" style="border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+    <tr>
+      <td class="header-sm">
+        Request Summary
+      </td>
+    </tr>
+    <tr>
+      <td>Order ID</td>
+      {% if businessInteraction["@type"] == "SalesOrder" %}
+      <td><a href="{{portalHost}}/portal/fulfilment/order/manage/sales/{{businessInteraction.id}}">{{businessInteraction.id}}</a></td>
+      {% else %}
+      <td><a href="{{portalHost}}/portal/fulfilment/order/manage/order/{{businessInteraction.id}}">{{businessInteraction.id}}</a></td>
+      {% endif %}
+    </tr>
+
+    {{ renderPartyRow(businessInteraction.businessInteractionInvolves.partyInteractionRole, "COMMERCIALLY_RESPONSIBLE", "Customer") }}
+
+    {% if businessInteraction["@type"] == "CustomerOrder" %}
+        {% set requestTypeString = businessInteraction.orderType + " Customer Order" %}
+    {% elseif businessInteraction["@type"] == "SalesOrder" %}
+        {% set requestTypeString = " Sales Order" %}
+    {% else %}
+        {% set requestTypeString = businessInteraction.enquiryType %}
+    {% endif %}
+
+    {{ renderRow("Request Type", requestTypeString)}}
+    {{ renderRow("Status", businessInteraction.interactionStatus.name) }}
+    {{ renderRow("Sub State", businessInteraction.interactionSubState) }}
+    {{ renderRow("Customer Reference", businessInteraction.customerReference) }}
+    {{ renderRow("Submission Date", businessInteraction.interactionDate) }}
+
+    {% if businessInteraction.priority == 40 %}
+      {% set priorityString = "Low" %}
+    {% elseif businessInteraction.priority == 60 %}
+      {% set priorityString = "Medium" %}
+    {% elseif businessInteraction.priority == 70 %}
+      {% set priorityString = "High" %}
+    {% elseif businessInteraction.priority == 80 %}
+      {% set priorityString = "Critical" %}
+    {% else %}
+      {% set priorityString = "Not specified" %}
+    {% endif %}
+
+    {{ renderRow("Priority", priorityString) }}
+    {{ renderPartyRow(businessInteraction.businessInteractionInvolves.partyInteractionRole, "TEAM", "Team") }}
+    {{ renderPartyRow(businessInteraction.businessInteractionInvolves.partyInteractionRole, "ASSIGNEE", "Assignee") }}
+</table>

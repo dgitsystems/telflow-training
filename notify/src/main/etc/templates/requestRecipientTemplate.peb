@@ -1,0 +1,11 @@
+{% import "utility.peb" %}
+{% if generateContactEmail("TEAM", businessInteraction.businessInteractionInvolves.partyInteractionRole, "NOTIFICATION") != "" %}
+{{ generateContactEmail("TEAM", businessInteraction.businessInteractionInvolves.partyInteractionRole, "NOTIFICATION") }}
+{% elseif generateContactEmail("TEAM", businessInteraction.businessInteractionInvolves.partyInteractionRole, "CONTACT") != "" %}
+{{ generateContactEmail("TEAM", businessInteraction.businessInteractionInvolves.partyInteractionRole, "CONTACT") }}
+{% endif %}
+{% if generateContactEmail("ASSIGNEE", businessInteraction.businessInteractionInvolves.partyInteractionRole, "NOTIFICATION") != "" %}
+{{ generateContactEmail("ASSIGNEE", businessInteraction.businessInteractionInvolves.partyInteractionRole, "NOTIFICATION") }}
+{% elseif generateContactEmail("ASSIGNEE", businessInteraction.businessInteractionInvolves.partyInteractionRole, "CONTACT") != "" %}
+{{ generateContactEmail("ASSIGNEE", businessInteraction.businessInteractionInvolves.partyInteractionRole, "CONTACT") }}
+{% endif %}

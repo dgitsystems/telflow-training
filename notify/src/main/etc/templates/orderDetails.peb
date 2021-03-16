@@ -1,0 +1,14 @@
+{% import "utility.peb" %}
+
+{% for currentDescribedBy in describedBy %}
+    {% if currentDescribedBy.id == businessInteraction.id and currentDescribedBy.characteristics is not empty %}
+      <table class="characteristic-block" cellspacing="0" cellpadding="0" width="100%" align="left" style="border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+        <tr>
+          <td class="header-sm">
+            Order Details
+          </td>
+        </tr>
+        {{ renderCharacteristics(currentDescribedBy.characteristics, "") }}
+      </table>
+    {% endif %}
+{% endfor %}

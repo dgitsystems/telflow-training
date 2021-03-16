@@ -1,0 +1,40 @@
+{% import "utility.peb" %}
+
+{% macro renderInventoryDetail(inventoryEntity, describedBy) %}
+    <table class="characteristic-block" cellspacing="0" cellpadding="0" width="100%" align="left" style="border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+        <tr>
+          <td class="header-sm">
+            {{inventoryEntity["@type"]}} Details
+          </td>
+        </tr>
+        <tr>
+          <td>{{inventoryEntity["@type"]}} Instance ID</td>
+          <td><a href="{{portalHost}}/portal/fulfilment/inventory/search/{{inventoryEntity.id}}">{{inventoryEntity.id}}</a></td>
+        </tr>
+        <tr>
+          <td>{{inventoryEntity["@type"]}}</td>
+          <td>{{inventoryEntity.offeringDescribes.name}}</td>
+        </tr>
+        {% for currentDescribedBy in describedBy %}
+          {% if currentDescribedBy.id == inventoryEntity.id %}
+            {{ renderCharacteristics(currentDescribedBy.characteristics, "") }}
+          {% endif %}
+        {% endfor %}
+     </table>
+{% endmacro %}
+
+{% if businessInteraction.businessInteractionComprisedOf is not null %}
+    {% for customerOrderItem in businessInteraction.businessInteractionComprisedOf %}
+        {% if customerOrderItem.action == "NO_CHANGE" %}
+            {% for itemRelationship in customerOrderItem.businessInteractionItemRelationships.businessInteractionItemRelationship %}
+                {% for inventoryEntity in itemRelationship.businessInteractionItem.itemInvolvesInventoryEntities %}
+                    {{renderInventoryDetail(inventoryEntity, describedBy)}}
+                {% endfor %}
+            {% endfor %}
+        {% else %}
+            {% for inventoryEntity in customerOrderItem.itemInvolvesInventoryEntities %}
+                {{renderInventoryDetail(inventoryEntity, describedBy)}}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
