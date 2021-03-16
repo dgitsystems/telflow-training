@@ -81,6 +81,8 @@ public class FileProvider implements ArtefactstoreProvider {
         
         File newFile = new File(this.fileSystemPath + fileName);
         
+        LOG.info("Storing file to : " + this.fileSystemPath + fileName);
+        
         try {
             FileUtils.writeByteArrayToFile(newFile, data, false);
             return true;

@@ -14,23 +14,17 @@
     </cm:property-placeholder>
     
     <bean id="http4" class="org.apache.camel.component.http4.HttpComponent">
-        <property name="connectionTimeToLive" value="${http.telflow.fabric.connectionTimeToLive}"/>
+        <property name="connectionTimeToLive" value="123456"/>
     </bean>
     
     <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
     
-    <bean id="artefactProviderTracker" class="com.telflow.artefact.victrack.provider.ArtefactProviderTracker" init-method="open"/>
+    <bean id="artefactProviderTracker" class="com.telflow.training.artefact.ArtefactProviderTracker" init-method="open"/>
     
     <bean id="fileProvider" class="com.telflow.training.artefact.FileProvider">
-        <argument ref="authenticationManager"/>
-        <argument ref="CimConverter"/>
-        <property name="fabricInbox" ref="fabricEndpointTemplate"/>
-        <property name="httpHelper" ref="httpHelper"/>
-        <property name="tracker" ref="artefactProviderTracker"/>
-        <property name="sharepointUrl" value="${api.url}"/>
-        <property name="sharepointDocLib" value="${sharepointDocLib}"/>
+        <property name="fileSystemPath" value="/opt/telflow/artefact/etc/"/>
     </bean>
-    <service id="sharepointProviderService" ref="sharepointProvider" auto-export="interfaces"/>
+    <service id="fileProviderService" ref="fileProvider" auto-export="interfaces"/>
     
     <reference id="CimConverter" interface="com.telflow.cim.converter.CimConverter" timeout="0"/>
 
