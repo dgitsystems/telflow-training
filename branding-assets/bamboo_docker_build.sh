@@ -17,9 +17,9 @@ BuildNumber=$3
 BuildDirectory=$4
 
 TelflowVersion=${LongTelflowVersion%??}
-TelflowVersionLabel="$LongTelflowVersion-$BuildNumber"
+TelflowVersionLabel="1.0.0"
 
-TelflowVersionDevLabel="$LongTelflowVersion.dev-$BuildNumber"
+TelflowVersionDevLabel="$LongTelflowVersion.dev"
 TelflowVersionDevCurrent="$TelflowVersion.dev.current"
 TelflowVersionCurrent="$TelflowVersion.current"
 
