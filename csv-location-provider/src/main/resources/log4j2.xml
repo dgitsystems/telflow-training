@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Configuration packages="com.telflow.csv.address" name="logging">
+    <Properties>
+        <Property name="attributes">timestamp,correlationId,command,tid,principal,host,service,instance,version,thread,category,level,message,fault,stacktrace,payload</Property>
+        <Property name="log.dir">${sys:logPath:-/opt/telflow/csv-address-provider/logs}</Property>
+        <Property name="color.fatal">bright red</Property>
+        <Property name="color.error">bright red</Property>
+        <Property name="color.warn">bright yellow</Property>
+        <Property name="color.info">bright green</Property>
+        <Property name="color.debug">cyan</Property>
+        <Property name="color.trace">cyan</Property>
+    </Properties>
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout
+                pattern="%d{HH:mm:ss.SSS} %highlight{%-5level}{FATAL=${color.fatal}, ERROR=${color.error}, WARN=${color.warn}, INFO=${color.info}, DEBUG=${color.debug}, TRACE=${color.trace}} [%t][%msg]%n%throwable"/>
+        </Console>
+        <RollingRandomAccessFile name="RollingRandomAccessFile" fileName="${log.dir}/csv-address-provider.log"
+                                 filePattern="${log.dir}/log/csv-address-provider.log.%i">
+            <CustomJsonLayout
+                    isRecursiveStackTrace="false"
+                    attributes="${attributes}" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="16KB"/>
+            </Policies>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="CONSOLE" level="INFO" />
+            <AppenderRef ref="RollingRandomAccessFile" level="INFO" />
+        </Root>
+    </Loggers>
+</Configuration>
