@@ -7,7 +7,7 @@
 
 # Change these to match your build
 DockerRegistry="registry.cloud.telflow.com/dgit_private"
-TelflowComponent="telflow-victrack-assets"
+TelflowComponent="telflow-training-assets"
 DockerfilePath="docker/Dockerfile"
 
 #You probably don't want to change the variables below this line
