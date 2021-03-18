@@ -54,5 +54,5 @@ function buildDocker() {
 buildDocker
 
 #housekeeping
-docker system prune -f
-docker image prune -a -f --filter="label!=Component=TelflowBaseImage"
+#docker system prune -f
+#docker image prune -a -f --filter="label!=Component=TelflowBaseImage"
