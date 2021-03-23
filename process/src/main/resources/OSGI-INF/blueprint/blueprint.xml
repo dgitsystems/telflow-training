@@ -1,0 +1,22 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                               http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+  <cm:property-placeholder persistent-id="com.telflow.process.kafka" update-strategy="reload" placeholder-prefix="$$" placeholder-suffix="$$">
+    <cm:default-properties>
+      <cm:property name="kafkaEndpoint" value="10.254.7.216:9093"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <bean id="transportRegistry" class="com.telflow.process.training.kafka.KafkaMessagePublisher" factory-method="setup" destroy-method="teardown">
+    <argument value="$$kafkaEndpoint$$"/>
+  </bean>
+  
+  <reference id="processEngineRef" interface="org.activiti.engine.ProcessEngine"/>
+
+  <bean id="executionControlMapper" class="com.telflow.process.training.db.ExecutionControlManager">
+    <argument ref="processEngineRef" />
+  </bean>
+
+</blueprint>

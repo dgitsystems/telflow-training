@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="com.telflow.process.product">
+  <process id="Process_Integration_IC_Demo" name="Process Integration IC Demo" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <serviceTask id="inProgress" name="In Progress" activiti:async="true" activiti:class="com.telflow.process.listeners.businessinteraction.UpdateStatus">
+      <extensionElements>
+        <activiti:field name="updateStatus">
+          <activiti:string><![CDATA[In Progress]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="inProgress"></sequenceFlow>
+    <userTask id="sendMessage" name="Send Message">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.telflow.process.listeners.task.TaskVariablePreparation">
+          <activiti:field name="taskSpecificationId">
+            <activiti:string><![CDATA[SPC000000000090]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="complete" class="com.telflow.process.listeners.task.MapCharacteristics">
+          <activiti:field name="mapping">
+            <activiti:string><![CDATA[{"correlationId":"//correlationId","message":"//message"}]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow4" sourceRef="exclusivegateway1" targetRef="sendMessage"></sequenceFlow>
+    <receiveTask id="receivetask1" name="Receive Task">
+      <extensionElements>
+        <activiti:executionListener event="end" class="com.telflow.process.listeners.integration.ReceiveAsyncMessage">
+          <activiti:field name="correlationId">
+            <activiti:string><![CDATA[${correlationId}]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </receiveTask>
+    <serviceTask id="sendExternalTransactions" name="Send External Transactions" activiti:async="true" activiti:class="com.telflow.process.training.listeners.SendExternalMessage"></serviceTask>
+    <sequenceFlow id="flow6" sourceRef="sendMessage" targetRef="sendExternalTransactions"></sequenceFlow>
+    <sequenceFlow id="flow7" sourceRef="sendExternalTransactions" targetRef="receivetask1"></sequenceFlow>
+    <serviceTask id="complete" name="Complete" activiti:class="com.telflow.process.listeners.businessinteraction.UpdateStatus">
+      <extensionElements>
+        <activiti:field name="updateStatus">
+          <activiti:string><![CDATA[Complete]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow8" sourceRef="receivetask1" targetRef="complete"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow9" sourceRef="complete" targetRef="endevent1"></sequenceFlow>
+    <boundaryEvent id="boundaryerror1" name="Error" attachedToRef="sendExternalTransactions">
+      <errorEventDefinition></errorEventDefinition>
+    </boundaryEvent>
+    <userTask id="handleException" name="Handle Exception">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.telflow.process.listeners.task.TaskVariablePreparation">
+          <activiti:field name="specificationId">
+            <activiti:string><![CDATA[SPC000000000100]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow10" sourceRef="boundaryerror1" targetRef="handleException"></sequenceFlow>
+    <sequenceFlow id="flow11" sourceRef="handleException" targetRef="exclusivegateway1"></sequenceFlow>
+    <serviceTask id="loadCI" name="Load CI" activiti:async="true" activiti:class="com.telflow.process.listeners.configurationentity.GetConfigurationEntity">
+      <extensionElements>
+        <activiti:field name="configEntityAlias">
+          <activiti:string><![CDATA[taskingParameters]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="configEntityId">
+          <activiti:string><![CDATA[CON000000000019]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="SaveCIAsProcessVariable">
+          <activiti:string><![CDATA[true]]></activiti:string>
+        </activiti:field>
+        <activiti:executionListener event="end" class="com.telflow.process.listeners.configurationentity.MapCharacteristicFromStoredCI">
+          <activiti:field name="mapping">
+            <activiti:string><![CDATA[{"kafkaTopic":"/kafkaTopic"}]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="configInstance">
+            <activiti:string><![CDATA[config.taskingParameters]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow12" sourceRef="inProgress" targetRef="loadCI"></sequenceFlow>
+    <sequenceFlow id="flow13" sourceRef="loadCI" targetRef="exclusivegateway1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Process_Integration_IC_Demo">
+    <bpmndi:BPMNPlane bpmnElement="Process_Integration_IC_Demo" id="BPMNPlane_Process_Integration_IC_Demo">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="1.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="inProgress" id="BPMNShape_inProgress">
+        <omgdc:Bounds height="71.0" width="131.0" x="91.0" y="152.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendMessage" id="BPMNShape_sendMessage">
+        <omgdc:Bounds height="71.0" width="141.0" x="701.0" y="152.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="611.0" y="167.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="receivetask1" id="BPMNShape_receivetask1">
+        <omgdc:Bounds height="71.0" width="141.0" x="1091.0" y="152.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendExternalTransactions" id="BPMNShape_sendExternalTransactions">
+        <omgdc:Bounds height="71.0" width="141.0" x="891.0" y="152.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundaryerror1" id="BPMNShape_boundaryerror1">
+        <omgdc:Bounds height="30.0" width="30.0" x="981.0" y="212.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="complete" id="BPMNShape_complete">
+        <omgdc:Bounds height="71.0" width="141.0" x="1281.0" y="152.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="1481.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="handleException" id="BPMNShape_handleException">
+        <omgdc:Bounds height="71.0" width="131.0" x="1031.0" y="310.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="loadCI" id="BPMNShape_loadCI">
+        <omgdc:Bounds height="71.0" width="131.0" x="331.0" y="152.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="36.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="91.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="651.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="701.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="842.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="891.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="1032.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1091.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="1232.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1281.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="1422.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1481.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="996.0" y="242.0"></omgdi:waypoint>
+        <omgdi:waypoint x="995.0" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1031.0" y="345.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="1096.0" y="381.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1096.0" y="449.0"></omgdi:waypoint>
+        <omgdi:waypoint x="631.0" y="449.0"></omgdi:waypoint>
+        <omgdi:waypoint x="631.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="222.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="331.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="462.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="611.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
