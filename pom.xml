@@ -23,6 +23,7 @@
         <telflow.process.version>11.2.0</telflow.process.version>
         <telflow.pricing.version>11.2.0</telflow.pricing.version>
         <solution.factory.version>2.1.0-SNAPSHOT</solution.factory.version>
+        <solution.factory.processes.version>11.2.0-SNAPSHOT</solution.factory.processes.version>
         <consul.client.version>1.4.2</consul.client.version>
         <tmf.core.version>2.1.0-SNAPSHOT</tmf.core.version>
         <secore.version>2.4.13</secore.version>
@@ -119,6 +120,7 @@
         <module>pricing</module>
         <module>file-artefact-storage</module>
         <module>notify</module>
+        <module>ic-outbound-integration</module>
     </modules>
 
     <dependencies>
