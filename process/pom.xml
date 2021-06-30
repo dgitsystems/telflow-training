@@ -206,6 +206,40 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.telflow.process</groupId>
+                  <artifactId>message-publisher</artifactId>
+                  <version>${solution.factory.processes.version}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.telflow.process</groupId>
+                  <artifactId>systems-integrator-process</artifactId>
+                  <version>${solution.factory.processes.version}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.telflow.process</groupId>
+                  <artifactId>lwt</artifactId>
+                  <version>${solution.factory.processes.version}</version>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${docker.build.dir}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <!-- Add process diagrams to test classpath -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
